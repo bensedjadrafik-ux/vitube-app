@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViTube - منصة الفيديو</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* التنسيقات العامة */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f5f7 0%, #e5e5e7 100%);
+            color: #1d1d1f;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* الهيدر */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0 20px;
+            border-bottom: 1px solid #e5e5e7;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo h1 {
+            color: #1d1d1f;
+            font-size: 28px;
+            margin-right: 10px;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1d1d1f, #424245);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo-icon i {
+            color: white;
+            font-size: 18px;
+        }
+
+        .search-bar {
+            display: flex;
+            flex: 0 1 600px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 50px 12px 20px;
+            border: 2px solid #e5e5e7;
+            border-radius: 16px;
+            font-size: 16px;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            transition: all 0.3s;
+        }
+
+        .search-bar input::placeholder {
+            color: #8e8e93;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            background: white;
+            border-color: #1d1d1f;
+            box-shadow: 0 0 0 3px rgba(29, 29, 31, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8e8e93;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .search-bar input:focus + .search-icon {
+            color: #1d1d1f;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: background 0.3s;
+        }
+
+        .user-profile:hover {
+            background: #f5f5f7;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #1d1d1f, #424245);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .glass-btn {
+            background: rgba(29, 29, 31, 0.9);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .glass-btn:hover {
+            background: rgba(29, 29, 31, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-btn.outline {
+            background: transparent;
+            color: #1d1d1f;
+            border: 2px solid #e5e5e7;
+        }
+
+        .glass-btn.outline:hover {
+            background: #f5f5f7;
+            border-color: #1d1d1f;
+        }
+
+        /* المحتوى الرئيسي */
+        .main-container {
+            display: flex;
+            margin-top: 70px;
+        }
+
+        /* الشريط الجانبي */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            height: calc(100vh - 70px);
+            position: fixed;
+            overflow-y: auto;
+            padding: 24px 0;
+            border-left: 1px solid #e5e5e7;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #8e8e93;
+            padding: 0 24px 12px 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 12px;
+            margin: 4px 16px;
+            font-weight: 500;
+            color: #1d1d1f;
+            border: 1px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: #f5f5f7;
+            border: 1px solid #e5e5e7;
+            transform: translateX(-5px);
+        }
+
+        .sidebar-item.active {
+            background: #1d1d1f;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar-item i {
+            margin-left: 15px;
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .sidebar-item.active i {
+            color: white;
+        }
+
+        .sidebar-item:hover i {
+            transform: scale(1.1);
+        }
+
+        .sidebar-badge {
+            background: #ff3b30;
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: auto;
+            font-weight: 600;
+        }
+
+        /* منطقة الفيديوهات */
+        .content {
+            margin-right: 280px;
+            padding: 24px;
+            flex: 1;
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #1d1d1f, #424245);
+            color: white;
+            padding: 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .banner h2 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .video-card:hover {
+            transform: translateY(-8px);
+            border-color: #d1d1d6;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: 180px;
+            background: #f5f5f7;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+
+        .video-card:hover .thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .duration {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(29, 29, 31, 0.9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 16px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: #1d1d1f;
+        }
+
+        .channel-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .channel-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #1d1d1f, #424245);
+            margin-left: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .channel-name {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .video-stats {
+            color: #8e8e93;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* نافذة تشغيل الفيديو */
+        .video-player-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-player-container {
+            width: 85%;
+            max-width: 1100px;
+            background: #1d1d1f;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #2c2c2e;
+            color: white;
+        }
+
+        .close-player {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-player:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .video-player {
+            width: 100%;
+            height: 500px;
+            background: #000;
+        }
+
+        .video-player video {
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-player-info {
+            padding: 24px;
+            background: #1d1d1f;
+            color: white;
+        }
+
+        .player-actions {
+            display: flex;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .glass-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            font-size: 16px;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .glass-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .glass-action-btn.liked {
+            background: rgba(255, 59, 48, 0.3);
+            border: 1px solid rgba(255, 59, 48, 0.5);
+        }
+
+        /* قسم التعليقات */
+        .comments-section {
+            margin-top: 24px;
+        }
+
+        .comments-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .add-comment {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .glass-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            resize: none;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-btn-small {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0 24px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .glass-btn-small:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .comment {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comment-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #1d1d1f, #424245);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .comment-text {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .comment-action {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s;
+            padding: 6px 12px;
+            border-radius: 10px;
+        }
+
+        .comment-action:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* نافذة تسجيل الدخول */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 400px;
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid #e5e5e7;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .login-header h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .login-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .login-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 2px solid #e5e5e7;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f5f5f7;
+        }
+
+        .login-option:hover {
+            border-color: #1d1d1f;
+            background: white;
+        }
+
+        .login-option i {
+            font-size: 20px;
+            width: 24px;
+        }
+
+        .login-divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #8e8e93;
+            position: relative;
+        }
+
+        .login-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 45%;
+            height: 1px;
+            background: #e5e5e7;
+        }
+
+        .login-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 45%;
+            height: 1px;
+            background: #e5e5e7;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            border: 2px solid #e5e5e7;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #f5f5f7;
+            transition: all 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #1d1d1f;
+            background: white;
+        }
+
+        /* نافذة رفع الفيديو */
+        .upload-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload-container {
+            width: 600px;
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid #e5e5e7;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .close-upload {
+            background: #f5f5f7;
+            border: 1px solid #e5e5e7;
+            font-size: 24px;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: #1d1d1f;
+        }
+
+        .close-upload:hover {
+            background: #e5e5e7;
+            transform: rotate(90deg);
+        }
+
+        .upload-form input, .upload-form textarea, .upload-form select {
+            width: 100%;
+            padding: 14px 20px;
+            margin-bottom: 16px;
+            border: 2px solid #e5e5e7;
+            border-radius: 16px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f5f5f7;
+            color: #1d1d1f;
+        }
+
+        .upload-form input::placeholder, .upload-form textarea::placeholder {
+            color: #8e8e93;
+        }
+
+        .upload-form input:focus, .upload-form textarea:focus, .upload-form select:focus {
+            outline: none;
+            border-color: #1d1d1f;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(29, 29, 31, 0.1);
+        }
+
+        .upload-form textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .thumbnail-preview {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f7;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            position: relative;
+            border: 2px dashed #e5e5e7;
+        }
+
+        .thumbnail-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumbnail-preview .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #8e8e93;
+        }
+
+        .quality-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .quality-option {
+            padding: 16px;
+            border: 2px solid #e5e5e7;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f5f5f7;
+        }
+
+        .quality-option:hover {
+            border-color: #1d1d1f;
+            background: white;
+        }
+
+        .quality-option.selected {
+            border-color: #1d1d1f;
+            background: #1d1d1f;
+            color: white;
+        }
+
+        .quality-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .quality-desc {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        .quality-option.selected .quality-desc {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .file-upload-area {
+            border: 2px dashed #e5e5e7;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 16px;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.3s;
+            background: #f5f5f7;
+            position: relative;
+        }
+
+        .file-upload-area:hover {
+            border-color: #1d1d1f;
+            background: #e5e5e7;
+        }
+
+        .file-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f5f5f7;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .upload-progress {
+            width: 100%;
+            height: 6px;
+            background: #e5e5e7;
+            border-radius: 3px;
+            margin: 16px 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #1d1d1f, #424245);
+            border-radius: 3px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        .upload-btn {
+            background: #1d1d1f;
+            color: white;
+            border: none;
+            padding: 16px 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #424245;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-btn:disabled {
+            background: #8e8e93;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* الفوتر */
+        footer {
+            background: white;
+            padding: 32px;
+            text-align: center;
+            border-top: 1px solid #e5e5e7;
+            margin-right: 280px;
+            color: #666;
+        }
+
+        /* التجاوب مع الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .content {
+                margin-right: 0;
+            }
+            
+            footer {
+                margin-right: 0;
+            }
+            
+            .videos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .video-player-container {
+                width: 95%;
+            }
+            
+            .video-player {
+                height: 300px;
+            }
+            
+            .search-bar {
+                flex: 0 1 400px;
+            }
+            
+            .upload-container, .login-container {
+                width: 95%;
+                margin: 20px;
+            }
+            
+            .quality-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الهيدر -->
+    <header>
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-play"></i>
+                </div>
+                <h1>ViTube</h1>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" placeholder="ابحث في ViTube...">
+                <div class="search-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+            
+            <div class="user-actions">
+                <button class="glass-btn" id="upload-btn">
+                    <i class="fas fa-cloud-upload-alt"></i> رفع فيديو
+                </button>
+                <div class="user-profile" id="user-profile">
+                    <div class="user-avatar" id="user-avatar">م</div>
+                    <span id="user-name">مستخدم</span>
+                </div>
+                <button class="glass-btn outline" id="login-btn">
+                    <i class="fas fa-user"></i> تسجيل الدخول
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="main-container">
+        <!-- الشريط الجانبي -->
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">القائمة الرئيسية</div>
+                <div class="sidebar-item active">
+                    <i class="fas fa-home"></i> الرئيسية
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-fire"></i> الشائع
+                    <span class="sidebar-badge">جديد</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-compass"></i> الاستكشاف
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">المكتبة</div>
+                <div class="sidebar-item">
+                    <i class="fas fa-film"></i> مقاطعك
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-history"></i> السجل
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-clock"></i> المشاهدة لاحقاً
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-thumbs-up"></i> مقاطع أعجبتك
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-download"></i> التحميلات
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">الاشتراكات</div>
+                <div class="sidebar-item">
+                    <i class="fas fa-user-circle"></i> قناة البرمجة
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-user-circle"></i> السفر والمغامرات
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-user-circle"></i> مطبخ أم يوسف
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-user-circle"></i> تكنو تك
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">الإعدادات</div>
+                <div class="sidebar-item">
+                    <i class="fas fa-cog"></i> الإعدادات
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-flag"></i> الإبلاغ عن مشكلة
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-question-circle"></i> المساعدة
+                </div>
+            </div>
+        </nav>
+
+        <!-- منطقة الفيديوهات -->
+        <main class="content">
+            <div class="banner">
+                <h2>مرحباً بك في ViTube</h2>
+                <p>منصة الفيديو الرائدة - شاهد وشارك مقاطع الفيديو المميزة</p>
+            </div>
+
+            <div class="videos-grid" id="videos-container">
+                <!-- سيتم إضافة الفيديوهات ديناميكياً -->
+            </div>
+        </main>
+    </div>
+
+    <!-- نافذة تشغيل الفيديو -->
+    <div class="video-player-modal" id="video-player-modal">
+        <div class="video-player-container">
+            <div class="video-player-header">
+                <h3 id="player-title">عنوان الفيديو</h3>
+                <button class="close-player" id="close-player">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+            <div class="video-player">
+                <video id="video-player" controls>
+                    <source src="" type="video/mp4">
+                    متصفحك لا يدعم تشغيل الفيديو.
+                </video>
+            </div>
+            <div class="video-player-info">
+                <div class="player-actions">
+                    <button class="glass-action-btn" id="like-btn">
+                        <i class="fas fa-heart"></i> <span id="likes-count">0</span>
+                    </button>
+                    <button class="glass-action-btn" id="dislike-btn">
+                        <i class="fas fa-heart-crack"></i> <span id="dislikes-count">0</span>
+                    </button>
+                    <button class="glass-action-btn" id="share-btn">
+                        <i class="fas fa-share-nodes"></i> مشاركة
+                    </button>
+                    <button class="glass-action-btn" id="download-btn">
+                        <i class="fas fa-download"></i> تحميل
+                    </button>
+                </div>
+                
+                <div class="video-description">
+                    <p id="player-description">وصف الفيديو</p>
+                </div>
+                
+                <div class="comments-section">
+                    <h3 class="comments-title">التعليقات (<span id="comments-count">0</span>)</h3>
+                    
+                    <div class="add-comment">
+                        <textarea class="glass-input" id="comment-input" placeholder="أضف تعليقاً..."></textarea>
+                        <button class="glass-btn-small" id="comment-submit">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="comments-list" id="comments-list">
+                        <!-- سيتم إضافة التعليقات ديناميكياً -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تسجيل الدخول -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-container">
+            <div class="login-header">
+                <h2>تسجيل الدخول</h2>
+                <p>اختر طريقة تسجيل الدخول المفضلة لديك</p>
+            </div>
+            
+            <div class="login-options">
+                <div class="login-option" id="google-login">
+                    <i class="fab fa-google" style="color: #DB4437;"></i>
+                    <span>المتابعة مع Google</span>
+                </div>
+                <div class="login-option" id="facebook-login">
+                    <i class="fab fa-facebook" style="color: #4267B2;"></i>
+                    <span>المتابعة مع Facebook</span>
+                </div>
+                <div class="login-option" id="apple-login">
+                    <i class="fab fa-apple"></i>
+                    <span>المتابعة مع Apple</span>
+                </div>
+            </div>
+            
+            <div class="login-divider">أو</div>
+            
+            <form class="login-form" id="email-login-form">
+                <input type="email" placeholder="البريد الإلكتروني" required>
+                <input type="password" placeholder="كلمة المرور" required>
+                <button type="submit" class="upload-btn">تسجيل الدخول</button>
+            </form>
+            
+            <p style="text-align: center; margin-top: 16px; color: #8e8e93;">
+                ليس لديك حساب؟ <a href="#" style="color: #1d1d1f; font-weight: 600;">إنشاء حساب</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- نافذة رفع الفيديو -->
+    <div class="upload-modal" id="upload-modal">
+        <div class="upload-container">
+            <div class="upload-header">
+                <h2>رفع فيديو جديد</h2>
+                <button class="close-upload" id="close-upload">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+            <form class="upload-form" id="upload-form">
+                <input type="text" id="video-title" placeholder="عنوان الفيديو" required>
+                <textarea id="video-description" placeholder="وصف الفيديو"></textarea>
+                
+                <div class="thumbnail-preview" id="thumbnail-preview">
+                    <div class="placeholder">
+                        <i class="fas fa-image" style="font-size: 48px; margin-bottom: 12px;"></i>
+                        <p>سيتم إنشاء صورة مصغرة تلقائياً</p>
+                    </div>
+                </div>
+                
+                <div class="quality-options" id="quality-options">
+                    <div class="quality-option" data-quality="1080p">
+                        <div class="quality-name">1080p FHD</div>
+                        <div class="quality-desc">جودة عالية - حتى 2GB</div>
+                    </div>
+                    <div class="quality-option" data-quality="4k">
+                        <div class="quality-name">4K UHD</div>
+                        <div class="quality-desc">جودة فائقة - حتى 5GB</div>
+                    </div>
+                    <div class="quality-option" data-quality="8k">
+                        <div class="quality-name">8K Ultra</div>
+                        <div class="quality-desc">أعلى جودة - حتى 10GB</div>
+                    </div>
+                </div>
+                
+                <div class="file-upload-area" id="file-upload-area">
+                    <i class="fas fa-cloud-arrow-up" style="font-size: 48px; color: #8e8e93; margin-bottom: 16px;"></i>
+                    <p style="font-weight: 600; margin-bottom: 8px; color: #1d1d1f;">انقر أو اسحب ملف الفيديو هنا</p>
+                    <p style="font-size: 14px; color: #8e8e93;">يدعم: MP4, WebM, MOV (الحد الأقصى: 10GB)</p>
+                    <div class="file-info" id="file-info" style="display: none;"></div>
+                </div>
+                <input type="file" id="video-file" accept="video/*" style="display: none;">
+                
+                <div class="upload-progress" id="upload-progress">
+                    <div class="upload-progress-bar" id="upload-progress-bar"></div>
+                </div>
+                
+                <button type="submit" class="upload-btn" id="upload-submit-btn">
+                    <i class="fas fa-cloud-upload-alt" style="margin-left: 8px;"></i> رفع الفيديو
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- الفوتر -->
+    <footer>
+        <p>ViTube &copy; 2024 - جميع الحقوق محفوظة</p>
+        <p>منصة الفيديو الرائدة - شاهد وشارك مقاطع الفيديو المميزة</p>
+    </footer>
+
+    <script>
+        // بيانات الفيديوهات الافتراضية
+        const videos = [
+            {
+                id: 1,
+                title: "تعلم البرمجة من الصفر - الدرس الأول",
+                description: "في هذا الفيديو سنبدأ رحلة تعلم البرمجة من الصفر باستخدام لغة Python.",
+                thumbnail: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=225&fit=crop",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                channel: "قناة البرمجة",
+                views: "150K",
+                duration: "10:30",
+                likes: 120,
+                dislikes: 5,
+                comments: [
+                    { id: 1, author: "أحمد محمد", text: "فيديو رائع، شكراً لك!", likes: 5 },
+                    { id: 2, author: "سارة علي", text: "أستفدت كثيراً من الشرح، شكراً جزيلاً", likes: 3 }
+                ]
+            },
+            {
+                id: 2,
+                title: "أفضل الأماكن السياحية في العالم",
+                description: "جولة حول أجمل الأماكن السياحية التي يمكنك زيارتها حول العالم.",
+                thumbnail: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&h=225&fit=crop",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                channel: "السفر والمغامرات",
+                views: "250K",
+                duration: "15:45",
+                likes: 180,
+                dislikes: 10,
+                comments: [
+                    { id: 1, author: "محمد خالد", text: "أتمنى زيارتها يوماً ما", likes: 8 }
+                ]
+            },
+            {
+                id: 3,
+                title: "وصفات طبخ سهلة وسريعة",
+                description: "تعلم كيفية تحضير ألذ الوصفات بخطوات سهلة وسريعة.",
+                thumbnail: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&h=225&fit=crop",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                channel: "مطبخ أم يوسف",
+                views: "500K",
+                duration: "8:20",
+                likes: 320,
+                dislikes: 15,
+                comments: []
+            },
+            {
+                id: 4,
+                title: "مراجعة الهاتف الجديد 2024",
+                description: "مراجعة شاملة لأحدث هاتف ذكي في السوق مع إبراز المميزات والعيوب.",
+                thumbnail: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=225&fit=crop",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+                channel: "تكنو تك",
+                views: "1.2M",
+                duration: "22:10",
+                likes: 850,
+                dislikes: 40,
+                comments: [
+                    { id: 1, author: "فاطمة أحمد", text: "الهاتف رائع ولكن السعر مرتفع", likes: 12 },
+                    { id: 2, author: "يوسف علي", text: "شكراً على المراجعة الشاملة", likes: 7 },
+                    { id: 3, author: "ليلى محمد", text: "هل ينصح بشرائه؟", likes: 3 }
+                ]
+            }
+        ];
+
+        // العناصر الرئيسية في DOM
+        const videosContainer = document.getElementById('videos-container');
+        const videoPlayerModal = document.getElementById('video-player-modal');
+        const videoPlayer = document.getElementById('video-player');
+        const playerTitle = document.getElementById('player-title');
+        const playerDescription = document.getElementById('player-description');
+        const closePlayer = document.getElementById('close-player');
+        const loginModal = document.getElementById('login-modal');
+        const loginBtn = document.getElementById('login-btn');
+        const userProfile = document.getElementById('user-profile');
+        const userAvatar = document.getElementById('user-avatar');
+        const userName = document.getElementById('user-name');
+        const uploadModal = document.getElementById('upload-modal');
+        const uploadBtn = document.getElementById('upload-btn');
+        const closeUpload = document.getElementById('close-upload');
+        const uploadForm = document.getElementById('upload-form');
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const videoFileInput = document.getElementById('video-file');
+        const fileInfo = document.getElementById('file-info');
+        const thumbnailPreview = document.getElementById('thumbnail-preview');
+        const qualityOptions = document.querySelectorAll('.quality-option');
+        const uploadProgress = document.getElementById('upload-progress');
+        const uploadProgressBar = document.getElementById('upload-progress-bar');
+        const uploadSubmitBtn = document.getElementById('upload-submit-btn');
+        const likeBtn = document.getElementById('like-btn');
+        const dislikeBtn = document.getElementById('dislike-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const likesCount = document.getElementById('likes-count');
+        const dislikesCount = document.getElementById('dislikes-count');
+        const commentsCount = document.getElementById('comments-count');
+        const commentsList = document.getElementById('comments-list');
+        const commentInput = document.getElementById('comment-input');
+        const commentSubmit = document.getElementById('comment-submit');
+
+        // متغيرات التطبيق
+        let currentVideo = null;
+        let userLiked = false;
+        let userDisliked = false;
+        let selectedQuality = '1080p';
+        let currentFile = null;
+        let isLoggedIn = false;
+        let currentUser = null;
+
+        // عرض الفيديوهات في الصفحة الرئيسية
+        function displayVideos() {
+            videosContainer.innerHTML = '';
+            
+            videos.forEach(video => {
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.setAttribute('data-id', video.id);
+                
+                // الحصول على الحرف الأول من اسم القناة للأيقونة
+                const channelInitial = video.channel.charAt(0);
+                
+                videoCard.innerHTML = `
+                    <div class="thumbnail">
+                        <img src="${video.thumbnail}" alt="${video.title}" onerror="this.src='https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop'">
+                        <span class="duration">${video.duration}</span>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">${video.title}</div>
+                        <div class="channel-info">
+                            <div class="channel-icon">${channelInitial}</div>
+                            <div class="channel-name">${video.channel}</div>
+                        </div>
+                        <div class="video-stats">
+                            <span>${video.views} مشاهدة</span>
+                            <span>•</span>
+                            <span><i class="fas fa-heart"></i> ${video.likes}</span>
+                        </div>
+                    </div>
+                `;
+                
+                videosContainer.appendChild(videoCard);
+            });
+            
+            // إضافة أحداث النقر للفيديوهات
+            document.querySelectorAll('.video-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const videoId = parseInt(this.getAttribute('data-id'));
+                    openVideoPlayer(videoId);
+                });
+            });
+        }
+
+        // فتح نافذة تشغيل الفيديو
+        function openVideoPlayer(videoId) {
+            currentVideo = videos.find(v => v.id === videoId);
+            
+            if (currentVideo) {
+                playerTitle.textContent = currentVideo.title;
+                playerDescription.textContent = currentVideo.description;
+                videoPlayer.src = currentVideo.videoUrl;
+                likesCount.textContent = currentVideo.likes;
+                dislikesCount.textContent = currentVideo.dislikes;
+                commentsCount.textContent = currentVideo.comments.length;
+                
+                // إعادة تعيين حالة الإعجاب/عدم الإعجاب
+                userLiked = false;
+                userDisliked = false;
+                likeBtn.classList.remove('liked');
+                dislikeBtn.classList.remove('liked');
+                
+                // عرض التعليقات
+                displayComments();
+                
+                // عرض نافذة التشغيل
+                videoPlayerModal.style.display = 'flex';
+                
+                // تشغيل الفيديو
+                setTimeout(() => {
+                    videoPlayer.play();
+                }, 500);
+            }
+        }
+
+        // عرض التعليقات
+        function displayComments() {
+            commentsList.innerHTML = '';
+            
+            if (currentVideo.comments.length === 0) {
+                commentsList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.7);">لا توجد تعليقات بعد</p>';
+                return;
+            }
+            
+            currentVideo.comments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment';
+                
+                // الحصول على الحرف الأول من اسم المستخدم للأيقونة
+                const userInitial = comment.author.charAt(0);
+                
+                commentElement.innerHTML = `
+                    <div class="comment-avatar">${userInitial}</div>
+                    <div class="comment-content">
+                        <div class="comment-author">${comment.author}</div>
+                        <div class="comment-text">${comment.text}</div>
+                        <div class="comment-actions">
+                            <button class="comment-action">
+                                <i class="fas fa-heart"></i> ${comment.likes}
+                            </button>
+                            <button class="comment-action">
+                                <i class="fas fa-reply"></i> رد
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                commentsList.appendChild(commentElement);
+            });
+        }
+
+        // إضافة تعليق جديد
+        function addComment() {
+            const commentText = commentInput.value.trim();
+            
+            if (commentText && currentVideo) {
+                const newComment = {
+                    id: currentVideo.comments.length + 1,
+                    author: currentUser ? currentUser.name : "مستخدم",
+                    text: commentText,
+                    likes: 0
+                };
+                
+                currentVideo.comments.push(newComment);
+                commentsCount.textContent = currentVideo.comments.length;
+                displayComments();
+                commentInput.value = '';
+            }
+        }
+
+        // التعامل مع الإعجاب وعدم الإعجاب
+        function handleLike() {
+            if (!userLiked) {
+                currentVideo.likes++;
+                likesCount.textContent = currentVideo.likes;
+                likeBtn.classList.add('liked');
+                userLiked = true;
+                
+                // إذا كان المستخدم قد ضغط على عدم الإعجاب مسبقاً
+                if (userDisliked) {
+                    currentVideo.dislikes--;
+                    dislikesCount.textContent = currentVideo.dislikes;
+                    dislikeBtn.classList.remove('liked');
+                    userDisliked = false;
+                }
+            } else {
+                currentVideo.likes--;
+                likesCount.textContent = currentVideo.likes;
+                likeBtn.classList.remove('liked');
+                userLiked = false;
+            }
+        }
+
+        function handleDislike() {
+            if (!userDisliked) {
+                currentVideo.dislikes++;
+                dislikesCount.textContent = currentVideo.dislikes;
+                dislikeBtn.classList.add('liked');
+                userDisliked = true;
+                
+                // إذا كان المستخدم قد ضغط على الإعجاب مسبقاً
+                if (userLiked) {
+                    currentVideo.likes--;
+                    likesCount.textContent = currentVideo.likes;
+                    likeBtn.classList.remove('liked');
+                    userLiked = false;
+                }
+            } else {
+                currentVideo.dislikes--;
+                dislikesCount.textContent = currentVideo.dislikes;
+                dislikeBtn.classList.remove('liked');
+                userDisliked = false;
+            }
+        }
+
+        // تحميل الفيديو
+        function downloadVideo() {
+            if (currentVideo) {
+                const link = document.createElement('a');
+                link.href = currentVideo.videoUrl;
+                link.download = `${currentVideo.title}.mp4`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                alert(`جاري تحميل الفيديو: ${currentVideo.title}`);
+            }
+        }
+
+        // تسجيل الدخول
+        function login(user) {
+            isLoggedIn = true;
+            currentUser = user;
+            userAvatar.textContent = user.name.charAt(0);
+            userName.textContent = user.name;
+            loginBtn.style.display = 'none';
+            userProfile.style.display = 'flex';
+            closeLoginModal();
+            alert(`مرحباً ${user.name}! تم تسجيل الدخول بنجاح.`);
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            isLoggedIn = false;
+            currentUser = null;
+            userAvatar.textContent = 'م';
+            userName.textContent = 'مستخدم';
+            loginBtn.style.display = 'flex';
+            userProfile.style.display = 'none';
+            alert('تم تسجيل الخروج بنجاح.');
+        }
+
+        // فتح نافذة تسجيل الدخول
+        function openLoginModal() {
+            loginModal.style.display = 'flex';
+        }
+
+        // إغلاق نافذة تسجيل الدخول
+        function closeLoginModal() {
+            loginModal.style.display = 'none';
+        }
+
+        // اختيار جودة الفيديو
+        function selectQuality(quality) {
+            selectedQuality = quality;
+            qualityOptions.forEach(option => {
+                if (option.dataset.quality === quality) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+
+        // إنشاء صورة مصغرة من الفيديو
+        function generateThumbnail(file) {
+            return new Promise((resolve) => {
+                const video = document.createElement('video');
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                
+                video.addEventListener('loadeddata', function() {
+                    video.currentTime = 1;
+                });
+                
+                video.addEventListener('seeked', function() {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const thumbnailUrl = canvas.toDataURL('image/jpeg');
+                    resolve(thumbnailUrl);
+                });
+                
+                video.src = URL.createObjectURL(file);
+            });
+        }
+
+        // رفع فيديو جديد
+        async function handleUpload(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('video-title').value;
+            const description = document.getElementById('video-description').value;
+            
+            if (!title || !currentFile) {
+                alert('يرجى إدخال عنوان الفيديو ورفع ملف');
+                return;
+            }
+            
+            // محاكاة عملية الرفع
+            uploadSubmitBtn.disabled = true;
+            uploadSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-left: 8px;"></i> جاري الرفع...';
+            uploadProgress.style.display = 'block';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // إنشاء صورة مصغرة
+                    generateThumbnail(currentFile).then(thumbnailUrl => {
+                        // إضافة الفيديو الجديد
+                        const newVideo = {
+                            id: videos.length + 1,
+                            title: title,
+                            description: description,
+                            thumbnail: thumbnailUrl,
+                            videoUrl: URL.createObjectURL(currentFile),
+                            channel: currentUser ? currentUser.name : "قناتك",
+                            views: "0",
+                            duration: "0:00",
+                            likes: 0,
+                            dislikes: 0,
+                            comments: [],
+                            quality: selectedQuality
+                        };
+                        
+                        videos.push(newVideo);
+                        displayVideos();
+                        closeUploadModal();
+                        
+                        setTimeout(() => {
+                            alert(`تم رفع الفيديو "${title}" بنجاح بجودة ${selectedQuality}!`);
+                        }, 500);
+                    });
+                }
+                uploadProgressBar.style.width = progress + '%';
+            }, 200);
+        }
+
+        // فتح نافذة رفع الفيديو
+        function openUploadModal() {
+            if (!isLoggedIn) {
+                alert('يجب تسجيل الدخول لرفع فيديو');
+                openLoginModal();
+                return;
+            }
+            uploadModal.style.display = 'flex';
+        }
+
+        // إغلاق نافذة رفع الفيديو
+        function closeUploadModal() {
+            uploadModal.style.display = 'none';
+            uploadForm.reset();
+            fileUploadArea.innerHTML = `
+                <i class="fas fa-cloud-arrow-up" style="font-size: 48px; color: #8e8e93; margin-bottom: 16px;"></i>
+                <p style="font-weight: 600; margin-bottom: 8px; color: #1d1d1f;">انقر أو اسحب ملف الفيديو هنا</p>
+                <p style="font-size: 14px; color: #8e8e93;">يدعم: MP4, WebM, MOV (الحد الأقصى: 10GB)</p>
+                <div class="file-info" id="file-info" style="display: none;"></div>
+            `;
+            thumbnailPreview.innerHTML = `
+                <div class="placeholder">
+                    <i class="fas fa-image" style="font-size: 48px; margin-bottom: 12px;"></i>
+                    <p>سيتم إنشاء صورة مصغرة تلقائياً</p>
+                </div>
+            `;
+            fileInfo.style.display = 'none';
+            uploadProgress.style.display = 'none';
+            uploadProgressBar.style.width = '0%';
+            uploadSubmitBtn.disabled = false;
+            uploadSubmitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt" style="margin-left: 8px;"></i> رفع الفيديو';
+            selectQuality('1080p');
+            currentFile = null;
+        }
+
+        // إعداد الأحداث
+        function setupEventListeners() {
+            // إغلاق نافذة تشغيل الفيديو
+            closePlayer.addEventListener('click', () => {
+                videoPlayerModal.style.display = 'none';
+                videoPlayer.pause();
+            });
+            
+            // فتح نافذة رفع الفيديو
+            uploadBtn.addEventListener('click', openUploadModal);
+            
+            // إغلاق نافذة رفع الفيديو
+            closeUpload.addEventListener('click', closeUploadModal);
+            
+            // تسجيل الدخول
+            loginBtn.addEventListener('click', openLoginModal);
+            
+            // تسجيل الخروج
+            userProfile.addEventListener('click', logout);
+            
+            // طرق تسجيل الدخول
+            document.getElementById('google-login').addEventListener('click', () => {
+                login({ name: 'محمد أحمد', email: 'mohamed@example.com' });
+            });
+            
+            document.getElementById('facebook-login').addEventListener('click', () => {
+                login({ name: 'أحمد محمد', email: 'ahmed@example.com' });
+            });
+            
+            document.getElementById('apple-login').addEventListener('click', () => {
+                login({ name: 'سارة علي', email: 'sara@example.com' });
+            });
+            
+            // تسجيل الدخول بالبريد الإلكتروني
+            document.getElementById('email-login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                login({ name: 'مستخدم', email: 'user@example.com' });
+            });
+            
+            // التعامل مع رفع الملف
+            fileUploadArea.addEventListener('click', () => {
+                videoFileInput.click();
+            });
+            
+            videoFileInput.addEventListener('change', async function() {
+                if (this.files.length > 0) {
+                    currentFile = this.files[0];
+                    const fileSize = (currentFile.size / (1024 * 1024)).toFixed(2);
+                    const fileName = currentFile.name;
+                    
+                    fileInfo.innerHTML = `
+                        <strong>اسم الملف:</strong> ${fileName}<br>
+                        <strong>الحجم:</strong> ${fileSize} MB<br>
+                        <strong>النوع:</strong> ${currentFile.type}
+                    `;
+                    fileInfo.style.display = 'block';
+                    
+                    // إنشاء وعرض صورة مصغرة
+                    try {
+                        const thumbnailUrl = await generateThumbnail(currentFile);
+                        thumbnailPreview.innerHTML = `<img src="${thumbnailUrl}" alt="معاينة الفيديو">`;
+                    } catch (error) {
+                        console.error('Error generating thumbnail:', error);
+                        thumbnailPreview.innerHTML = `
+                            <div class="placeholder">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 12px;"></i>
+                                <p>تعذر إنشاء الصورة المصغرة</p>
+                            </div>
+                        `;
+                    }
+                }
+            });
+            
+            // سحب وإفلات الملف
+            fileUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = '#1d1d1f';
+                fileUploadArea.style.background = '#e5e5e7';
+            });
+            
+            fileUploadArea.addEventListener('dragleave', () => {
+                fileUploadArea.style.borderColor = '#e5e5e7';
+                fileUploadArea.style.background = '#f5f5f7';
+            });
+            
+            fileUploadArea.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = '#e5e5e7';
+                fileUploadArea.style.background = '#f5f5f7';
+                
+                if (e.dataTransfer.files.length > 0) {
+                    currentFile = e.dataTransfer.files[0];
+                    videoFileInput.files = e.dataTransfer.files;
+                    
+                    const fileSize = (currentFile.size / (1024 * 1024)).toFixed(2);
+                    const fileName = currentFile.name;
+                    
+                    fileInfo.innerHTML = `
+                        <strong>اسم الملف:</strong> ${fileName}<br>
+                        <strong>الحجم:</strong> ${fileSize} MB<br>
+                        <strong>النوع:</strong> ${currentFile.type}
+                    `;
+                    fileInfo.style.display = 'block';
+                    
+                    // إنشاء وعرض صورة مصغرة
+                    try {
+                        const thumbnailUrl = await generateThumbnail(currentFile);
+                        thumbnailPreview.innerHTML = `<img src="${thumbnailUrl}" alt="معاينة الفيديو">`;
+                    } catch (error) {
+                        console.error('Error generating thumbnail:', error);
+                    }
+                }
+            });
+            
+            // اختيار جودة الفيديو
+            qualityOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    selectQuality(option.dataset.quality);
+                });
+            });
+            
+            // إرسال نموذج رفع الفيديو
+            uploadForm.addEventListener('submit', handleUpload);
+            
+            // التعامل مع الإعجاب وعدم الإعجاب
+            likeBtn.addEventListener('click', handleLike);
+            dislikeBtn.addEventListener('click', handleDislike);
+            
+            // تحميل الفيديو
+            downloadBtn.addEventListener('click', downloadVideo);
+            
+            // إضافة تعليق
+            commentSubmit.addEventListener('click', addComment);
+            
+            // إضافة تعليق بالضغط على Enter
+            commentInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    addComment();
+                }
+            });
+            
+            // إغلاق النوافذ بالضغط على ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (videoPlayerModal.style.display === 'flex') {
+                        videoPlayerModal.style.display = 'none';
+                        videoPlayer.pause();
+                    }
+                    if (uploadModal.style.display === 'flex') {
+                        closeUploadModal();
+                    }
+                    if (loginModal.style.display === 'flex') {
+                        closeLoginModal();
+                    }
+                }
+            });
+            
+            // إغلاق النوافذ بالضغط خارجها
+            window.addEventListener('click', function(e) {
+                if (e.target === videoPlayerModal) {
+                    videoPlayerModal.style.display = 'none';
+                    videoPlayer.pause();
+                }
+                if (e.target === uploadModal) {
+                    closeUploadModal();
+                }
+                if (e.target === loginModal) {
+                    closeLoginModal();
+                }
+            });
+        }
+
+        // تهيئة التطبيق
+        function init() {
+            displayVideos();
+            setupEventListeners();
+            selectQuality('1080p');
+        }
+
+        // تشغيل التطبيق عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
