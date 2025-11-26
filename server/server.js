@@ -1,121 +1,47 @@
-// رابط الخادم على Render
-const API_BASE = 'https://vitube-backend.onrender.com/api';
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
 
-// دوال للاتصال بالخادم الحقيقي
-const api = {
-    async login(email, password) {
-        try {
-            const response = await fetch(`${API_BASE}/login`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-            return await response.json();
-        } catch (error) {
-            return { 
-                success: false, 
-                message: 'خطأ في الاتصال بالخادم' 
-            };
-        }
-    },
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-    async register(name, email, password) {
-        try {
-            const response = await fetch(`${API_BASE}/register`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name, email, password })
-            });
-            return await response.json();
-        } catch (error) {
-            return { 
-                success: false, 
-                message: 'خطأ في الاتصال بالخادم' 
-            };
-        }
-    },
+// middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public')); // إذا كان لديك ملفات ثابتة
 
-    async getVideos() {
-        try {
-            const response = await fetch(`${API_BASE}/videos`);
-            const result = await response.json();
-            return result.success ? result.data : [];
-        } catch (error) {
-            console.error('Error fetching videos:', error);
-            return [];
-        }
-    },
+// Routes الأساسية
+app.get('/', (req, res) => {
+    res.json({ message: 'مرحباً! الخادم يعمل بنجاح' });
+});
 
-    async addVideo(videoData) {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${API_BASE}/videos`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(videoData)
-            });
-            return await response.json();
-        } catch (error) {
-            return { 
-                success: false, 
-                message: 'خطأ في الاتصال بالخادم' 
-            };
-        }
-    },
+app.get('/api/videos', (req, res) => {
+    res.json({
+        success: true,
+        data: [
+            { id: 1, title: 'فيديو تجريبي', url: 'https://example.com/video1' }
+        ]
+    });
+});
 
-    async addComment(videoId, commentData) {
-        try {
-            const response = await fetch(`${API_BASE}/videos/${videoId}/comments`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(commentData)
-            });
-            return await response.json();
-        } catch (error) {
-            return { 
-                success: false, 
-                message: 'خطأ في الاتصال بالخادم' 
-            };
-        }
-    }
-};
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+    // منطق التحقق من المستخدم
+    res.json({ 
+        success: true, 
+        message: 'تم التسجيل بنجاح',
+        token: 'token_here',
+        user: { name: 'مستخدم', email: email }
+    });
+});
 
-// تحديث دوال التطبيق لاستخدام الخادم الحقيقي
-async function handleRealLogin(email, password) {
-    const result = await api.login(email, password);
-    
-    if (result.success) {
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('user', JSON.stringify(result.user));
-        return { success: true, user: result.user };
-    } else {
-        return { success: false, message: result.message };
-    }
-}
+// تأكد من أن الخادم يستمع على المنفذ الصحيح
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ الخادم يعمل على المنفذ ${PORT}`);
+    console.log(`🌐 http://localhost:${PORT}`);
+});
 
-async function handleRealRegister(name, email, password) {
-    const result = await api.register(name, email, password);
-    
-    if (result.success) {
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('user', JSON.stringify(result.user));
-        return { success: true, user: result.user };
-    } else {
-        return { success: false, message: result.message };
-    }
-}
-
-// استبدال الدوال القديمة في كودك
-async function displayVideosFromServer() {
-    const videos = await api.getVideos();
-    // استخدم videos بدلاً من البيانات الثابتة
-}
+// معالجة الأخطاء
+process.on('unhandledRejection', (err) => {
+    console.error('❌ خطأ غير معالج:', err);
+});
